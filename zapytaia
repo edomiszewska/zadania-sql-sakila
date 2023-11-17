@@ -11,14 +11,70 @@ JOIN film_actor ON actor.actor_id=film_actor.actor_id
 join film on film.film_id=film_actor.film_id
 where film.title="African Egg";
 
-2. ma wyszukiwac tytul filmu, nazwisko aktora i rok wypuszczenia filmu, rating to G, kategoria 2
-SELECT DISTINCT film.title, actor.last_name, film.release_year from actor
-join film_actor on film_actor.actor_id=actor.actor_id
-join film on actor.actor_id=film_actor.actor_id
-where film.rating="G" order by film.title;
-where film.rating="G" and film_category.id="2"  order by film.title;
+2. ma wyszukiwac tytul filmu, imie i nazwisko aktora i rok wypuszczenia filmu, rating to G, dluosc powyzej 120, posortowane odwrotnie do alfabetu
+
+SELECT DISTINCT film.title,actor.first_name, actor.last_name, film.rating, film.length, film.release_year 
+from actor join film_actor on film_actor.actor_id=actor.actor_id 
+join film on actor.actor_id=film_actor.actor_id 
+where film.rating="G" and film.length>120 order by film.title desc;
 
 
-SELECT DISTINCT film.title,actor.first_name, actor.last_name, film.release_year from actor join film_actor on film_actor.actor_id=actor.actor_id join film on actor.actor_id=film_actor.actor_id where film.rating="G" order by film.title and film.length>120;
+3. wyszukuje imie i nazwisko klienta ktory pochodzi z miasta czestochowa
 
-3. 
+SELECT DISTINCT customer.first_name, customer.last_name, city, country from customer
+join address on customer.address_id=address.address_id
+join city on address.city_id=city.city_id
+join country on city.country_id=country.country_id
+where city="Czestochowa" and country="Poland";
+
+4. wyszukuje tytul filmu z kategorii horror i nazwisko aktora na litere "F" ktory gral w tym filmie
+
+SELECT DISTINCT film.title, category.name , actor.last_name from film
+join film_actor on film_actor.film_id=film.film_id
+join actor on actor.actor_id=film_actor.actor_id
+join film_category on film_category.film_id=film.film_id
+join category on category.category_id=film_category.category_id
+where film_category.category_id="11" and actor.last_name like "F%";
+
+5. wyszukuje imie i nazwisko klienta i kwote wieksza niz 3 i date zaplaty 2005-06 itd
+
+SELECT DISTINCT customer.first_name, customer.last_name, payment.amount, payment.payment_date
+from customer
+join payment on customer.customer_id=payment.customer_id 
+where payment.amount>3 and payment.payment_date like "2005-06%";
+
+
+5 BEZ JOINA 
+
+6. wyszukuje aktorow z imieniem na litere 'R' i nazwisko na litere 'T'
+
+SELECT DISTINCT actor.first_name, actor.last_name from actor
+where actor.first_name like "R%" and actor.last_name like "T%";
+
+7. wyszukuje numer telefonu ktory konczy sie na 7 i kod pocztowy zaczynajacy sie na 1
+
+SELECT DISTINCT address.phone, address.postal_code from address 
+where address.phone like "%7" and address.postal_code like "1%";
+
+lub jeszcze wysweietla gdzie miasto konczy sie na L i id kraju to 1
+
+SELECT DISTINCT address.phone, address.postal_code from address 
+where address.phone like "%7" and address.postal_code like "1%"
+UNION
+SELECT DISTINCT city, city.country_id from city
+where city like "%L" and city.country_id="1";
+
+8. wyswietla imie zacztynajace sie na M i nazwisko, email i nazwe usera konczaca sie na E
+
+SELECT DISTINCT staff.first_name, staff.last_name, staff.email, staff.username from staff
+where staff.first_name like "M%" and staff.username like "%E";
+
+9. wyswietla jezyk ktory sie konczy na litere "E" 
+
+SELECT DISTINCT LANGUAGE.name from language 
+where language.name like "%E";
+
+10. wyszukuje imienia aktorow ktorych liczba liter jest parzysta i wysweitla ta dlugosc imienia obok
+
+SELECT DISTINCT actor.first_name,length(actor.first_name) as dlugosc from actor
+where length(actor.first_name)%2=0  order by dlugosc;
